@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useState, useEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useState, useEffect, useRef, useMemo } from 'react';
 import { useInterval, useBoolean, useThrottleFn, useSize } from 'ahooks';
 import { useDispatch, useSelector } from 'react-redux';
 import dayjs from 'dayjs';
@@ -14,7 +14,7 @@ import * as Services from '@/services';
 import * as Helpers from '@/helpers';
 import * as Enums from '@/utils/enums';
 
-const { invoke, dialog, ipcRenderer, clipboard, app, saveString, encodeFF, decodeFF, readFile } = window.contextModules.electron;
+const { invoke, ipcRenderer } = window.contextModules.electron;
 
 export function useWorkDayTimeToDo(todo: () => void, delay: number, config?: { immediate: boolean }): void {
   useInterval(
@@ -109,10 +109,10 @@ export function useNativeThemeColor(varibles: string[]) {
   return { darkMode, colors };
 }
 
-export function useResizeEchart(scale = 1) {
+export function useResizeEchart(scale = 1, unlimited?: boolean) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [chartInstance, setChartInstance] = useState<echarts.ECharts | null>(null);
-  const { width: chartRefWidth } = useSize(chartRef);
+  const size = useSize(chartRef);
   useEffect(() => {
     const instance = echarts.init(chartRef.current!, undefined, {
       renderer: 'svg',
@@ -124,9 +124,12 @@ export function useResizeEchart(scale = 1) {
   }, []);
 
   useEffect(() => {
-    chartInstance?.resize({ height: chartRefWidth! * scale });
-  }, [chartRefWidth]);
-  return { ref: chartRef, chartRefWidth, chartInstance, setChartInstance };
+    if (size?.width) {
+      const height = size?.width * scale;
+      chartInstance?.resize({ height: unlimited ? height : height > 200 ? 200 : height });
+    }
+  }, [size?.width, unlimited]);
+  return { ref: chartRef, chartInstance, setChartInstance };
 }
 
 export function useRenderEcharts(callback: () => void, instance: echarts.ECharts | null, dep: any[] = []) {
@@ -150,7 +153,6 @@ export function useSyncFixFundSetting() {
           updateFundAction({
             code: responseFund!.fundcode!,
             name: responseFund!.name,
-            cbj: null,
           })
         );
       });
@@ -312,6 +314,13 @@ export function useFundRating(code: string) {
       star = total / count;
     }
   }
+
+  useEffect(() => {
+    if (!Object.keys(fundRatingMap)) {
+      Helpers.Fund.LoadFundRatingMap();
+    }
+  }, [fundRatingMap]);
+
   return {
     ...(fundRating || {}),
     star,
@@ -326,4 +335,27 @@ export function useAutoDestroySortableRef() {
     };
   }, []);
   return sortableRef;
+}
+
+/***
+ * statusMap Record<钱包code,booealn>
+ */
+export function useAllCyFunds(statusMap: Record<string, boolean>) {
+  const wallets = useSelector((state: StoreState) => state.wallet.wallets);
+
+  // 持有份额的基金，response数组
+  const funds = useMemo(() => {
+    const allFunds: (Fund.ResponseItem & Fund.FixData)[] = [];
+    const fundCodeMap = new Map();
+    wallets.forEach(({ code, funds }) => {
+      const fundConfig = Helpers.Wallet.GetCurrentWalletConfig(code).funds;
+      const fundCodeMap = Helpers.Fund.GetCodeMap(fundConfig);
+      if (statusMap[code]) {
+        allFunds.push(...funds.filter((fund) => !!fundCodeMap[fund.fundcode!]?.cyfe));
+      }
+    });
+    return allFunds.filter((fund) => !fundCodeMap.has(fund.fundcode!) && fundCodeMap.set(fund.fundcode!, true));
+  }, [statusMap, wallets]);
+
+  return funds;
 }

@@ -5,6 +5,8 @@ declare namespace Fund {
     cyfe: number;
     cbj?: number;
     zdfRange?: number;
+    jzNotice?: number;
+    memo?: string;
   }
   export interface ResponseItem {
     name?: string; // 名称 '诺安混合'
@@ -108,7 +110,7 @@ declare namespace Fund {
 
   export namespace Manager {
     export interface Info {
-      id: '30655271';
+      id: string;
       pic: 'https://pdf.dfcfw.com/pdf/H8_PNG30655271_1.jpg';
       name: '蔡嵩松';
       star: 1;

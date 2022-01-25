@@ -1,19 +1,20 @@
-import { contextBridge, ipcRenderer, shell, clipboard, nativeImage } from 'electron';
 import got from 'got';
-import { encode, decode } from 'js-base64';
 import log from 'electron-log';
+import { contextBridge, ipcRenderer, shell, clipboard, nativeImage } from 'electron';
+import { encode, decode } from 'js-base64';
 import * as fs from 'fs';
 import * as CONST from '../renderer/constants';
 import { base64ToBuffer } from './util';
-import { version } from '../../release/app/package.json';
 
+const { version } = require('../../release/app/package.json');
 const HttpProxyAgent = require('http-proxy-agent');
 const HttpsProxyAgent = require('https-proxy-agent');
 
 contextBridge.exposeInMainWorld('contextModules', {
   got: async (url: string, config = {}) => {
-    const { httpProxyAddressSetting, httpProxySetting, httpProxyWhitelistSetting, httpProxyRuleSetting }: any = JSON.parse(
-      localStorage.getItem(CONST.STORAGE.SYSTEM_SETTING)!
+    const { httpProxyAddressSetting, httpProxySetting, httpProxyWhitelistSetting, httpProxyRuleSetting } = await ipcRenderer.invoke(
+      'get-storage-config',
+      { key: CONST.STORAGE.SYSTEM_SETTING }
     );
     const httpProxyRuleMap = (httpProxyRuleSetting ?? '').split(',').reduce((map: Record<string, boolean>, address: string) => {
       map[address] = true;
@@ -85,12 +86,18 @@ contextBridge.exposeInMainWorld('contextModules', {
       writeText: clipboard.writeText,
       writeImage: (dataUrl: string) => clipboard.writeImage(nativeImage.createFromDataURL(dataUrl)),
     },
+  },
+  log: log,
+  io: {
     saveImage: (filePath: string, dataUrl: string) => {
       const imageBuffer = base64ToBuffer(dataUrl);
       fs.writeFileSync(filePath, imageBuffer);
     },
     saveString: (filePath: string, content: string) => {
       fs.writeFileSync(filePath, content);
+    },
+    readFile(path: string) {
+      return fs.readFileSync(path, 'utf-8');
     },
     encodeFF(content: any) {
       const ffprotocol = 'ff://'; // FF协议
@@ -110,9 +117,22 @@ contextBridge.exposeInMainWorld('contextModules', {
         return null;
       }
     },
-    readFile(path: string) {
-      return fs.readFileSync(path, 'utf-8');
+  },
+  electronStore: {
+    async get(key: string, init: unknown) {
+      return ipcRenderer.invoke('get-storage-config', { key, init });
+    },
+    async set(key: string, value: unknown) {
+      await ipcRenderer.invoke('set-storage-config', { key, value });
+    },
+    async delete(key: string) {
+      await ipcRenderer.invoke('delete-storage-config', { key });
+    },
+    async cover(value: unknown) {
+      await ipcRenderer.invoke('cover-storage-config', { value });
+    },
+    async all() {
+      return ipcRenderer.invoke('all-storage-config');
     },
   },
-  log: log,
 });

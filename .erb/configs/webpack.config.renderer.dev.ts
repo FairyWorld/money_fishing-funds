@@ -28,7 +28,7 @@ if (!requiredByDLLConfig && !(fs.existsSync(webpackPaths.dllPath) && fs.existsSy
   execSync('npm run postinstall');
 }
 
-export default merge(baseConfig, {
+const configuration: webpack.Configuration = {
   devtool: 'inline-source-map',
 
   mode: 'development',
@@ -84,16 +84,16 @@ export default merge(baseConfig, {
         type: 'asset/resource',
       },
       // SVG Font
-      {
-        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'image/svg+xml',
-          },
-        },
-      },
+      // {
+      //   test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+      //   use: {
+      //     loader: 'url-loader',
+      //     options: {
+      //       limit: 10000,
+      //       mimetype: 'image/svg+xml',
+      //     },
+      //   },
+      // },
       // Common Image Formats
       // {
       //   test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
@@ -164,7 +164,6 @@ export default merge(baseConfig, {
     },
     historyApiFallback: {
       verbose: true,
-      disableDotRule: false,
     },
     onBeforeSetupMiddleware() {
       console.log('Starting Main Process...');
@@ -177,4 +176,6 @@ export default merge(baseConfig, {
         .on('error', (spawnError) => console.error(spawnError));
     },
   },
-});
+};
+
+export default merge(baseConfig, configuration);

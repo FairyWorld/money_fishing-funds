@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import { Tabs, Rate } from 'antd';
 
 import ChartCard from '@/components/Card/ChartCard';
+import PureCard from '@/components/Card/PureCard';
 import CustomDrawer from '@/components/CustomDrawer';
 import ColorfulTags from '@/components/ColorfulTags';
 import Estimate from '@/components/Home/FundList/DetailFundContent/Estimate';
@@ -98,20 +99,16 @@ const DetailFundContent: React.FC<DetailFundContentProps> = (props) => {
   const syl_1n = pingzhongdata.syl_1n || pingzhongdata.syl_6y || pingzhongdata.syl_3y || pingzhongdata.syl_1y;
   const industryTags = useMemo(() => Array.from(new Set(industryData.stocks.map((stock) => stock.INDEXNAME))), [industryData.stocks]);
 
-  useRequest(Services.Fund.GetFixFromEastMoney, {
-    throwOnError: true,
-    defaultParams: [code],
+  useRequest(() => Services.Fund.GetFixFromEastMoney(code), {
     onSuccess: setFund,
   });
 
   const { run: runGetFundDetailFromEastmoney } = useRequest(() => Services.Fund.GetFundDetailFromEastmoney(code), {
-    throwOnError: true,
     onSuccess: setPingzhongdata,
     refreshDeps: [code],
   });
 
   const { run: runGetIndustryRateFromEaseMoney } = useRequest(() => Services.Fund.GetIndustryRateFromEaseMoney(code), {
-    throwOnError: true,
     onSuccess: setIndustryData,
     refreshDeps: [code],
   });
@@ -266,10 +263,12 @@ const DetailFundContent: React.FC<DetailFundContentProps> = (props) => {
             </Tabs.TabPane>
           </Tabs>
         </div>
-        <div>
-          <Tabs animated={{ tabPane: true }} tabBarGutter={15} tabBarStyle={{ marginLeft: 15 }}>
+        <div className={styles.container}>
+          <Tabs animated={{ tabPane: true }} tabBarGutter={15}>
             <Tabs.TabPane tab="同类型基金涨幅榜" key={String(0)}>
-              <SameFundList swithSameType={pingzhongdata.swithSameType} />
+              <PureCard>
+                <SameFundList swithSameType={pingzhongdata.swithSameType} />
+              </PureCard>
             </Tabs.TabPane>
           </Tabs>
         </div>

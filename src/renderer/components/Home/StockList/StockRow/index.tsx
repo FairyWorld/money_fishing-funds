@@ -4,8 +4,8 @@ import ColorHash from 'color-hash';
 import { useRequest } from 'ahooks';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { ReactComponent as ArrowDownIcon } from '@/static/icon/arrow-down.svg';
-import { ReactComponent as ArrowUpIcon } from '@/static/icon/arrow-up.svg';
+import ArrowDownIcon from '@/static/icon/arrow-down.svg';
+import ArrowUpIcon from '@/static/icon/arrow-up.svg';
 import { useHomeContext } from '@/components/Home';
 import Collapse from '@/components/Collapse';
 import { StoreState } from '@/reducers/types';
@@ -103,7 +103,6 @@ const StockRow: React.FC<RowProps> = (props) => {
   const industrys = useSelector((state: StoreState) => state.stock.industryMap[stock.secid]) || [];
 
   useRequest(() => Services.Stock.GetIndustryFromEastmoney(stock.secid, 1), {
-    throwOnError: true,
     onSuccess: (datas) => {
       if (datas.length) {
         dispatch(setIndustryMapAction(stock.secid, datas));

@@ -3,7 +3,6 @@ import classnames from 'classnames';
 import { Tabs } from 'antd';
 import { useSelector } from 'react-redux';
 
-import LoadingScreen from '@/components/LoadingScreen';
 import FundList from '@/components/Home/FundList';
 import ZindexList from '@/components/Home/ZindexList';
 import QuotationList from '@/components/Home/QuotationList';
@@ -17,6 +16,7 @@ import SortBar from '@/components/SortBar';
 import TabsBar from '@/components/TabsBar';
 import Collect from '@/components/Collect';
 import GroupTab from '@/components/GroupTab';
+import GlobalStyles from '@/components/GlobalStyles';
 import { stockTypesConfig } from '@/components/Home/StockList/AddStockContent';
 import { StoreState } from '@/reducers/types';
 import { useNativeThemeColor, useCurrentWallet } from '@/utils/hooks';
@@ -165,7 +165,7 @@ const Home: React.FC<HomeProps> = () => {
   return (
     <HomeContext.Provider value={{ darkMode, varibleColors }}>
       <div className={classnames(styles.layout)}>
-        <LoadingScreen />
+        <GlobalStyles />
         <Header>
           <Wallet />
           <SortBar />

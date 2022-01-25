@@ -1,5 +1,4 @@
 import React from 'react';
-import { Tabs } from 'antd';
 
 import Optional from '@/components/Home/ZindexList/ManageZindexContent/Optional';
 import CustomDrawerContent from '@/components/CustomDrawer/Content';
@@ -14,11 +13,7 @@ const ManageZindexContent: React.FC<ManageZindexContentProps> = (props) => {
   return (
     <CustomDrawerContent title="管理指数" enterText="确定" onEnter={props.onEnter} onClose={props.onClose}>
       <div className={styles.content}>
-        <Tabs animated={{ tabPane: true }} tabBarGutter={15}>
-          <Tabs.TabPane tab="自选指数" key={String(0)}>
-            <Optional />
-          </Tabs.TabPane>
-        </Tabs>
+        <Optional />
       </div>
     </CustomDrawerContent>
   );

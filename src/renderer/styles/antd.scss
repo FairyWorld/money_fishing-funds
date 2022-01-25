@@ -27,27 +27,36 @@
 //   }
 // }
 
-// .ant-slider {
-//   margin: 0;
-// }
-// .ant-tabs-tab:first-child {
-//   margin-left: 0 !important;
-// }
+.ant-slider {
+  margin: 0;
+}
+.ant-tabs-tab:first-child {
+  margin-left: 0 !important;
+}
+.ant-drawer-content {
+  background-color: initial;
+}
 .ant-drawer-body::-webkit-scrollbar {
   width: 0;
 }
-// .ant-tabs {
-//   color: var(--main-text-color);
-// }
-// .ant-checkbox-wrapper {
-//   color: var(--main-text-color);
-// }
-// .ant-radio-wrapper {
-//   color: var(--main-text-color);
-// }
-// .ant-checkbox-indeterminate .ant-checkbox-inner {
-//   border-color: var(--main-text-color);
-// }
-// .ant-progress-circle .ant-progress-text {
-//   color: var(--main-text-color);
-// }
+.ant-tabs {
+  color: var(--main-text-color);
+}
+.ant-checkbox-wrapper {
+  color: var(--main-text-color);
+}
+.ant-radio-wrapper {
+  color: var(--main-text-color);
+}
+.ant-checkbox-indeterminate .ant-checkbox-inner {
+  border-color: var(--main-text-color);
+}
+.ant-progress-circle .ant-progress-text {
+  color: var(--main-text-color);
+}
+.ant-progress {
+  // width: 100%;
+  height: 5px;
+  display: flex;
+  align-items: center;
+}

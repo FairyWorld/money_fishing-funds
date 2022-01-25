@@ -324,14 +324,54 @@ export async function FromFund123(code: string) {
             trusteeName: '中国银行股份有限公司';
             fundManagerBackground: '    韩创，中国国籍，金融学硕士，9年证券从业年限，具有基金从业资格。2012年6月至2015年6月曾任招商证券研究部研究员。2015年6月加入大成基金管理有限公司，历任研究部研究员、基金经理助理。2019年1月10日至2020年2月3日，担任大成消费主题混合型证券投资基金的基金经理。2019年1月10日起，担任大成新锐产业混合型证券投资基金的基金经理。2020年1月2日起，担任大成睿景灵活配置混合型证券投资基金的基金经理。2021年2月9日起，担任大成产业趋势混合型证券投资基金的基金经理。自2021年1月13日起，担任大成国企改革灵活配置混合型证券投资基金的基金经理。自2021年6月30日起，担任大成核心趋势混合型证券投资基金的基金经理。';
             fundManagerInfoList: [
-              { key: '1'; fundName: '大成新锐产业混合型证券投资基金'; officeDate: '2019-01-10  至今'; earnings: '3.979472' },
-              { key: '2'; fundName: '大成睿景灵活配置混合型证券投资基金A类'; officeDate: '2020-01-02  至今'; earnings: '2.241387' },
-              { key: '3'; fundName: '大成睿景灵活配置混合型证券投资基金C类'; officeDate: '2020-01-02  至今'; earnings: '2.201024' },
-              { key: '4'; fundName: '大成国企改革灵活配置混合型证券投资基金'; officeDate: '2021-01-13  至今'; earnings: '0.794896' },
-              { key: '5'; fundName: '大成产业趋势混合型证券投资基金A类'; officeDate: '2021-02-09  至今'; earnings: '0.448205' },
-              { key: '6'; fundName: '大成产业趋势混合型证券投资基金C类'; officeDate: '2021-02-09  至今'; earnings: '0.441500' },
-              { key: '7'; fundName: '大成核心趋势混合型证券投资基金C类'; officeDate: '2021-06-30  至今'; earnings: '0.225799' },
-              { key: '8'; fundName: '大成核心趋势混合型证券投资基金A类'; officeDate: '2021-06-30  至今'; earnings: '0.226099' }
+              {
+                key: '1';
+                fundName: '大成新锐产业混合型证券投资基金';
+                officeDate: '2019-01-10  至今';
+                earnings: '3.979472';
+              },
+              {
+                key: '2';
+                fundName: '大成睿景灵活配置混合型证券投资基金A类';
+                officeDate: '2020-01-02  至今';
+                earnings: '2.241387';
+              },
+              {
+                key: '3';
+                fundName: '大成睿景灵活配置混合型证券投资基金C类';
+                officeDate: '2020-01-02  至今';
+                earnings: '2.201024';
+              },
+              {
+                key: '4';
+                fundName: '大成国企改革灵活配置混合型证券投资基金';
+                officeDate: '2021-01-13  至今';
+                earnings: '0.794896';
+              },
+              {
+                key: '5';
+                fundName: '大成产业趋势混合型证券投资基金A类';
+                officeDate: '2021-02-09  至今';
+                earnings: '0.448205';
+              },
+              {
+                key: '6';
+                fundName: '大成产业趋势混合型证券投资基金C类';
+                officeDate: '2021-02-09  至今';
+                earnings: '0.441500';
+              },
+              {
+                key: '7';
+                fundName: '大成核心趋势混合型证券投资基金C类';
+                officeDate: '2021-06-30  至今';
+                earnings: '0.225799';
+              },
+              {
+                key: '8';
+                fundName: '大成核心趋势混合型证券投资基金A类';
+                officeDate: '2021-06-30  至今';
+                earnings: '0.226099';
+              }
             ];
             investPhilosophy: '    本基金的投资目标是通过投资于国企改革相关的优质上市公司，在严格控制风险的前提下，力争获取超越业绩比较基准的收益。';
             investStrategy: '    本基金通过对宏观经济环境、国家经济政策、股票市场风险、债券市场整体收益率曲线变化和资金供求关系等因素的分析，研判经济周期在美林投资时钟理论所处的阶段，综合评价各类资产的市场趋势、预期风险收益水平和配置时机。\r\n    本基金认为当前受益于国企改革的上市公司股票涉及多个行业，本基金将通过自下而上研究入库的方式，对各个行业中受益于国企改革主题的上市公司进行深入研究，并将这些股票组成本基金的核心股票库。\r\n    本基金将根据融资买入股票成本以及其他投资工具收益率综合评估是否采用融资方式买入股票，本基金在任何交易日日终持有的融资买入股票与直接买入股票市值之和，不得超过基金资产净值的95%。\r\n    本基金的债券投资采取稳健的投资管理方式，获得与风险相匹配的投资收益，以实现在一定程度上规避股票市场的系统性风险和保证基金资产的流动性。\r\n    中小企业私募债票面利率较高、信用风险较大、二级市场流动性较差。';
@@ -738,7 +778,7 @@ export async function GetFundManagerDetailFromEastMoney(code: string) {
   try {
     const { body: html } = await got(`http://fund.eastmoney.com/manager/${code}.html`);
     const $ = cheerio.load(html);
-    const description = $('meta[name="description"]').attr('content');
+    const description = $('meta[name="description"]').attr('content') || '';
     const table = $('.content_in').find('.ftrs')[0];
 
     const manageHistoryFunds: Fund.Manager.ManageHistoryFund[] = $(table)
@@ -772,7 +812,10 @@ export async function GetFundManagerDetailFromEastMoney(code: string) {
       description,
     };
   } catch (error) {
-    return {};
+    return {
+      manageHistoryFunds: [],
+      description: '',
+    };
   }
 }
 
@@ -864,14 +907,54 @@ export async function GetQDIIFundFromFund123(code: string) {
             trusteeName: '中国银行股份有限公司';
             fundManagerBackground: '    韩创，中国国籍，金融学硕士，9年证券从业年限，具有基金从业资格。2012年6月至2015年6月曾任招商证券研究部研究员。2015年6月加入大成基金管理有限公司，历任研究部研究员、基金经理助理。2019年1月10日至2020年2月3日，担任大成消费主题混合型证券投资基金的基金经理。2019年1月10日起，担任大成新锐产业混合型证券投资基金的基金经理。2020年1月2日起，担任大成睿景灵活配置混合型证券投资基金的基金经理。2021年2月9日起，担任大成产业趋势混合型证券投资基金的基金经理。自2021年1月13日起，担任大成国企改革灵活配置混合型证券投资基金的基金经理。自2021年6月30日起，担任大成核心趋势混合型证券投资基金的基金经理。';
             fundManagerInfoList: [
-              { key: '1'; fundName: '大成新锐产业混合型证券投资基金'; officeDate: '2019-01-10  至今'; earnings: '3.979472' },
-              { key: '2'; fundName: '大成睿景灵活配置混合型证券投资基金A类'; officeDate: '2020-01-02  至今'; earnings: '2.241387' },
-              { key: '3'; fundName: '大成睿景灵活配置混合型证券投资基金C类'; officeDate: '2020-01-02  至今'; earnings: '2.201024' },
-              { key: '4'; fundName: '大成国企改革灵活配置混合型证券投资基金'; officeDate: '2021-01-13  至今'; earnings: '0.794896' },
-              { key: '5'; fundName: '大成产业趋势混合型证券投资基金A类'; officeDate: '2021-02-09  至今'; earnings: '0.448205' },
-              { key: '6'; fundName: '大成产业趋势混合型证券投资基金C类'; officeDate: '2021-02-09  至今'; earnings: '0.441500' },
-              { key: '7'; fundName: '大成核心趋势混合型证券投资基金C类'; officeDate: '2021-06-30  至今'; earnings: '0.225799' },
-              { key: '8'; fundName: '大成核心趋势混合型证券投资基金A类'; officeDate: '2021-06-30  至今'; earnings: '0.226099' }
+              {
+                key: '1';
+                fundName: '大成新锐产业混合型证券投资基金';
+                officeDate: '2019-01-10  至今';
+                earnings: '3.979472';
+              },
+              {
+                key: '2';
+                fundName: '大成睿景灵活配置混合型证券投资基金A类';
+                officeDate: '2020-01-02  至今';
+                earnings: '2.241387';
+              },
+              {
+                key: '3';
+                fundName: '大成睿景灵活配置混合型证券投资基金C类';
+                officeDate: '2020-01-02  至今';
+                earnings: '2.201024';
+              },
+              {
+                key: '4';
+                fundName: '大成国企改革灵活配置混合型证券投资基金';
+                officeDate: '2021-01-13  至今';
+                earnings: '0.794896';
+              },
+              {
+                key: '5';
+                fundName: '大成产业趋势混合型证券投资基金A类';
+                officeDate: '2021-02-09  至今';
+                earnings: '0.448205';
+              },
+              {
+                key: '6';
+                fundName: '大成产业趋势混合型证券投资基金C类';
+                officeDate: '2021-02-09  至今';
+                earnings: '0.441500';
+              },
+              {
+                key: '7';
+                fundName: '大成核心趋势混合型证券投资基金C类';
+                officeDate: '2021-06-30  至今';
+                earnings: '0.225799';
+              },
+              {
+                key: '8';
+                fundName: '大成核心趋势混合型证券投资基金A类';
+                officeDate: '2021-06-30  至今';
+                earnings: '0.226099';
+              }
             ];
             investPhilosophy: '    本基金的投资目标是通过投资于国企改革相关的优质上市公司，在严格控制风险的前提下，力争获取超越业绩比较基准的收益。';
             investStrategy: '    本基金通过对宏观经济环境、国家经济政策、股票市场风险、债券市场整体收益率曲线变化和资金供求关系等因素的分析，研判经济周期在美林投资时钟理论所处的阶段，综合评价各类资产的市场趋势、预期风险收益水平和配置时机。\r\n    本基金认为当前受益于国企改革的上市公司股票涉及多个行业，本基金将通过自下而上研究入库的方式，对各个行业中受益于国企改革主题的上市公司进行深入研究，并将这些股票组成本基金的核心股票库。\r\n    本基金将根据融资买入股票成本以及其他投资工具收益率综合评估是否采用融资方式买入股票，本基金在任何交易日日终持有的融资买入股票与直接买入股票市值之和，不得超过基金资产净值的95%。\r\n    本基金的债券投资采取稳健的投资管理方式，获得与风险相匹配的投资收益，以实现在一定程度上规避股票市场的系统性风险和保证基金资产的流动性。\r\n    中小企业私募债票面利率较高、信用风险较大、二级市场流动性较差。';
@@ -1166,5 +1249,78 @@ export async function GetIndustryRateFromEaseMoney(code: string) {
       stocks: [],
       expansion: '',
     };
+  }
+}
+
+// 查询今日排行
+export async function GetTodayListFromEastmoney(type: number) {
+  try {
+    const { body } = await got<{
+      Data: {
+        typeStr: '1';
+        sort: '3';
+        sortType: 'desc';
+        canbuy: '0';
+        gzrq: '2021-11-18';
+        gxrq: '2021-11-19';
+        list: {
+          bzdm: '502010';
+          ListTexch: '1';
+          FScaleType: '01';
+          PLevel: 103.0;
+          JJGSID: '80000229';
+          IsExchg: '0';
+          FType: '指数型-股票';
+          Discount: 1.0;
+          Rate: '0.10%';
+          feature: '020,050,051,054';
+          fundtype: '001';
+          gxrq: '2021-11-19';
+          jjlx3: null;
+          IsListTrade: '1';
+          jjlx2: null;
+          shzt: null;
+          sgzt: '开放申购';
+          isbuy: '1';
+          gzrq: '2021-11-18';
+          gspc: '0.02%';
+          gsz: '1.2869';
+          gszzl: '1.95%';
+          jzzzl: '1.93%';
+          dwjz: '1.2623';
+          gbdwjz: '1.2867';
+          jjjcpy: 'YFDZZQZZQGSZSLOFA';
+          jjjc: '易方达中证全指证券公司指数(LOF)A';
+          jjlx: null;
+          gszzlcolor: 'ui-table-up';
+          jzzzlcolor: 'ui-table-up';
+        }[];
+      };
+      ErrCode: 0;
+      ErrMsg: null;
+      TotalCount: 12631;
+      Expansion: null;
+      PageSize: 200;
+      PageIndex: 1;
+    }>('http://api.fund.eastmoney.com/FundGuZhi/GetFundGZList', {
+      searchParams: {
+        type,
+        sort: 3,
+        orderType: 'desc',
+        canbuy: 0,
+        pageIndex: 1,
+        pageSize: 200,
+        _: new Date().getTime(),
+      },
+      headers: {
+        Referer: 'ttp://fund.eastmoney.com/',
+      },
+      responseType: 'json',
+    });
+
+    const data = body.Data.list;
+    return data;
+  } catch (error) {
+    return [];
   }
 }

@@ -38,19 +38,6 @@ export function GetCodeMap(config: Fund.SettingItem[]) {
   }, {} as CodeFundMap);
 }
 
-export function GetRemoteFundsMap() {
-  return Utils.GetStorage<Record<string, Fund.RemoteFund>>(CONST.STORAGE.REMOTE_FUND_MAP, {});
-}
-
-export function GetRemoteFunds() {
-  return Object.entries(Utils.GetStorage<Record<string, Fund.RemoteFund>>(CONST.STORAGE.REMOTE_FUND_MAP, {})).map(
-    ([code, remoteFund]) => remoteFund
-  );
-}
-export function GetFundsRatingMap() {
-  return Utils.GetStorage<Record<string, Fund.RantingItem>>(CONST.STORAGE.FUND_RATING_MAP, {});
-}
-
 export async function GetFunds(config: Fund.SettingItem[]) {
   const walletCode = Helpers.Wallet.GetCurrentWalletCode();
   const { fundConfig } = GetFundConfig(walletCode);
@@ -113,6 +100,7 @@ export function CalcFund(fund: Fund.ResponseItem & Fund.FixData, walletCode: str
   const isFix = fund.fixDate && fund.fixDate === gzrq;
   const cyfe = codeMap[fund.fundcode!]?.cyfe || 0;
   const cbj = codeMap[fund.fundcode!]?.cbj;
+  const memo = codeMap[fund.fundcode!]?.memo;
   const gsz = isFix ? fund.fixDwjz! : fund.gsz!;
   const dwjz = isFix ? fund.fixDwjz! : fund.dwjz!;
   const bjz = NP.minus(gsz!, fund.dwjz!);
@@ -132,6 +120,7 @@ export function CalcFund(fund: Fund.ResponseItem & Fund.FixData, walletCode: str
     ...fund,
     cyfe, // 持有份额
     cbj, // 成本价
+    memo, // 备注
     cbje, // 成本金额
     cyje, // 持有金额
     cysyl, // 持有收益率
@@ -221,8 +210,12 @@ export function MergeFixFunds(funds: (Fund.ResponseItem & Fund.FixData)[], fixFu
 export function SortFunds(funds: Fund.ResponseItem[], walletCode: string) {
   const { codeMap } = GetFundConfig(walletCode);
   const {
-    fundSortMode: { type: fundSortType, order: fundSortorder },
-  } = Helpers.Sort.GetSortMode();
+    sort: {
+      sortMode: {
+        fundSortMode: { type: fundSortType, order: fundSortorder },
+      },
+    },
+  } = store.getState();
   const sortList = Utils.DeepCopy(funds);
 
   sortList.sort((a, b) => {

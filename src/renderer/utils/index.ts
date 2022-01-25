@@ -1,13 +1,13 @@
 import NP from 'number-precision';
 import dayjs from 'dayjs';
 
-import { defaultWallet } from '@/helpers/wallet';
 import * as Enums from '@/utils/enums';
 import * as CONST from '@/constants';
-import * as Helpers from '@/helpers';
 
-const { invoke, encodeFF, decodeFF } = window.contextModules.electron;
+const { invoke } = window.contextModules.electron;
 const { version, production } = window.contextModules.process;
+const { encodeFF, decodeFF } = window.contextModules.io;
+const electronStore = window.contextModules.electronStore;
 const log = window.contextModules.log;
 
 export function Yang(num: string | number | undefined) {
@@ -55,17 +55,20 @@ export function DeepCopy<T>(object: T): T {
   }
 }
 
-export function GetStorage<T = any>(key: string, init?: T): T {
-  const json = localStorage.getItem(key);
-  return json ? JSON.parse(json) : init || json;
+export async function GetStorage<T = any>(key: string, init: T): Promise<T> {
+  return electronStore.get(key, init);
 }
 
-export function SetStorage(key: string, data: any) {
-  localStorage.setItem(key, JSON.stringify(data));
+export async function SetStorage(key: string, data: any) {
+  return electronStore.set(key, data);
 }
 
-export function ClearStorage(key: string) {
-  localStorage.removeItem(key);
+export async function CoverStorage(data: any) {
+  return electronStore.cover(data);
+}
+
+export async function ClearStorage(key: string) {
+  return electronStore.delete(key);
 }
 
 export function Encrypt(s: string) {
@@ -246,41 +249,6 @@ export function MakeHash() {
   return Math.random().toString(36).substr(2);
 }
 
-export function InitSystemSettingStorage() {
-  const systemSetting = Helpers.Setting.GetSystemSetting();
-  SetStorage(CONST.STORAGE.SYSTEM_SETTING, systemSetting);
-}
-
-export function ClearExpiredStorage() {
-  // 数据源请求类型 2.7.0已废除
-  const fundApiType = GetStorage(CONST.STORAGE.FUND_API_TYPE);
-  if (fundApiType !== null) {
-    ClearStorage(CONST.STORAGE.FUND_API_TYPE);
-  }
-  // 钱包icon索引 2.8.0已废除
-  // 基金配置 2.8.0已废除
-  const fundSetting = GetStorage(CONST.STORAGE.FUND_SETTING);
-  const walletIndex = GetStorage(CONST.STORAGE.WALLET_INDEX);
-  if (fundSetting !== null) {
-    const walletSetting: Wallet.SettingItem = {
-      ...defaultWallet,
-      funds: fundSetting || [],
-      iconIndex: walletIndex || 0,
-    };
-    SetStorage(CONST.STORAGE.WALLET_SETTING, [walletSetting]);
-    ClearStorage(CONST.STORAGE.FUND_SETTING);
-    ClearStorage(CONST.STORAGE.WALLET_INDEX);
-  }
-  // 未自选指数 4.7.0已废除
-  const zindexSetting = GetStorage(CONST.STORAGE.ZINDEX_SETTING);
-  if (zindexSetting !== null) {
-    SetStorage(
-      CONST.STORAGE.ZINDEX_SETTING,
-      zindexSetting.filter((zindex: any) => zindex.show !== false)
-    );
-  }
-}
-
 export function Group<T>(array: T[], num: number) {
   const groupList: T[][] = [];
   array.forEach((item) => {
@@ -341,14 +309,8 @@ export function CalcZDHC(list: number[]) {
   }
 }
 
-export function GenerateBackupConfig() {
-  const config = Object.keys(CONST.STORAGE).reduce<Record<string, any>>((data, key) => {
-    const content = GetStorage(key);
-    if (content !== undefined && content !== null) {
-      data[key] = content;
-    }
-    return data;
-  }, {});
+export async function GenerateBackupConfig() {
+  const config = await electronStore.all();
   const fileConfig: Backup.Config = {
     name: 'Fishing-Funds-Backup',
     author: '1zilc',
@@ -362,13 +324,9 @@ export function GenerateBackupConfig() {
   return fileConfig;
 }
 
-export function coverBackupConfig(fileConfig: Backup.Config) {
+export async function CoverBackupConfig(fileConfig: Backup.Config) {
   const content = decodeFF(fileConfig.content);
-  Object.entries(content).forEach(([key, value]) => {
-    if (key in CONST.STORAGE && value !== undefined && value !== null) {
-      SetStorage(key, value);
-    }
-  });
+  return CoverStorage(content);
 }
 
 export function ColorRgba(sHex: string, alpha = 1) {
@@ -405,4 +363,25 @@ export function CheckEnvTool() {
 
 export function GetWeekDay(day: number) {
   return ['星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'][day];
+}
+
+export function GetValueMapColor(value: any = 0) {
+  const alphas = [0.6, 0.7, 0.8, 0.9, 1];
+  const alphaindex = Math.ceil(Math.min(Math.abs(value) * 1.5, 5));
+  const colorAlpha = value === 0 ? 1 : alphas[alphaindex];
+  const color = GetValueColor(value).color;
+  const rgba = ColorRgba(color, colorAlpha);
+  return rgba;
+}
+
+export function GbLength(str: string) {
+  let len = 0;
+  for (let i = 0; i < str.length; i++) {
+    if (str.charCodeAt(i) > 127 || str.charCodeAt(i) == 94) {
+      len += 2;
+    } else {
+      len++;
+    }
+  }
+  return len;
 }
