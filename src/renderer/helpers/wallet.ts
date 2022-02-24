@@ -20,8 +20,8 @@ export const defaultWallet: Wallet.SettingItem = {
   funds: [],
 };
 
-export const walletIcons = new Array(40).fill('').map((_, index) => require(`@assets/wallet/${index}.png`));
-
+export const walletIcons = new Array(40).fill('').map((_, index) => new URL(`/assets/wallet/${index}.png`, import.meta.url).href);
+console.log(walletIcons);
 export function GetWalletConfig() {
   const {
     wallet: {

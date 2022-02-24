@@ -61,13 +61,13 @@ const configureStore = (initialState?: StoreState) => {
   // Create Store
   const store = createStore(rootReducer, enhancer);
 
-  if (module.hot) {
-    module.hot.accept(
-      '../reducers',
-      // eslint-disable-next-line global-require
-      () => store.replaceReducer(require('../reducers').default)
-    );
-  }
+  // if (module.hot) {
+  //   module.hot.accept(
+  //     '../reducers',
+  //     // eslint-disable-next-line global-require
+  //     () => store.replaceReducer(require('../reducers').default)
+  //   );
+  // }
 
   return store;
 };

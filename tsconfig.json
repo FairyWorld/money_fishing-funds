@@ -26,7 +26,8 @@
     "paths": {
       "@/*": ["./src/renderer/*"],
       "@assets/*": ["./assets/*"]
-    }
+    },
+    "types": ["vite-plugin-svgr/client"]
   },
   "include": ["./src/**/*"],
   "exclude": ["test", "release/app/dist", ".erb/dll"],

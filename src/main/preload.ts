@@ -3,7 +3,6 @@ import log from 'electron-log';
 import { contextBridge, ipcRenderer, shell, clipboard, nativeImage } from 'electron';
 import { encode, decode } from 'js-base64';
 import * as fs from 'fs';
-import * as CONST from '../renderer/constants';
 import { base64ToBuffer } from './util';
 
 const { version } = require('../../release/app/package.json');
@@ -14,7 +13,7 @@ contextBridge.exposeInMainWorld('contextModules', {
   got: async (url: string, config = {}) => {
     const { httpProxyAddressSetting, httpProxySetting, httpProxyWhitelistSetting, httpProxyRuleSetting } = await ipcRenderer.invoke(
       'get-storage-config',
-      { key: CONST.STORAGE.SYSTEM_SETTING }
+      { key: 'SYSTEM_SETTING' } // TODO：打包问题，暂时写死
     );
     const httpProxyRuleMap = (httpProxyRuleSetting ?? '').split(',').reduce((map: Record<string, boolean>, address: string) => {
       map[address] = true;

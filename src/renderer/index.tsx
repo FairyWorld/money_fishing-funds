@@ -6,7 +6,7 @@ import * as echarts from 'echarts';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-
+import chinaMap from '@/static/map/china.json';
 import { Provider } from 'react-redux';
 import { configureStore } from '@/store/configureStore';
 import App from '@/App';
@@ -19,7 +19,7 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.locale('zh-cn');
 
-echarts.registerMap('china', require('@/static/map/china.json'));
+echarts.registerMap('china', chinaMap as any);
 
 NP.enableBoundaryChecking(false);
 
