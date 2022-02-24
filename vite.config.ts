@@ -17,7 +17,6 @@ export default defineConfig({
     alias: {
       '@': path.resolve('./src/renderer'),
       '@assets': path.resolve('./assets'),
-      '~@': path.resolve('./src/renderer'),
     },
   },
 });
